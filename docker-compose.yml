@@ -1,0 +1,25 @@
+services:
+
+  easyocr:
+    build: .
+    container_name: tpp_ocr_easyocr
+    ports:
+      # Publicado sólo para poder probar el motor aislado.
+      - "8006:8006"
+    env_file:
+      - .env
+    networks:
+      - tpp-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8006/engine/livez"]
+      # El modelo tarda en cargar: se le da margen antes de contarlo como caído.
+      start_period: 90s
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+networks:
+  tpp-net:
+    external: true
+    name: tpp-net
