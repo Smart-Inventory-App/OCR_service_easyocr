@@ -87,9 +87,7 @@ El modelo de detección crece en memoria con la resolución de entrada. Medido:
 
 `MAX_WIDTH` es un **techo de seguridad**, no una preferencia de calidad: por encima, el proceso muere por OOM y se lleva puesto el contenedor. Qué resolución conviene para cada documento lo decide el coordinador y lo pide en `transform.max_width`; acá se le impone este techo.
 
-> **Docker Desktop** reparte por defecto ~2 GB entre *todos* los contenedores.
-> Con este servicio arriba conviene subirlo (Settings → Resources → Memory,
-> recomendado 4 GB) o bajar `MAX_WIDTH`.
+> **Docker Desktop** reparte por defecto ~2 GB entre *todos* los contenedores. Con este servicio arriba conviene subirlo (Settings → Resources → Memory, recomendado 4 GB) o bajar `MAX_WIDTH`.
 
 ---
 
