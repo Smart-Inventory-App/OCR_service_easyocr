@@ -14,7 +14,9 @@ RUN pip install --no-cache-dir \
         --index-url https://download.pytorch.org/whl/cpu \
         torch torchvision
 
-COPY requirements.txt .
+# Los dos: `requirements.txt` referencia al base con `-r`, así que sin él el
+# install falla.
+COPY requirements.txt requirements-base.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Los modelos se descargan una sola vez, en build: así el contenedor arranca sin

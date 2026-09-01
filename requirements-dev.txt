@@ -1,0 +1,17 @@
+# Dependencias para correr los tests. Es lo que instala el CI.
+#
+# **No incluye el motor**, y es deliberado: los tests doblan el `Reader`, así que
+# la suite pasa entera sin `easyocr` ni PyTorch instalados. Eso baja el CI de
+# ~15 minutos a cerca de uno.
+#
+# `pillow` figura explícito: hasta ahora llegaba de arrastre por PyTorch, y sin
+# el motor instalado hay que pedirlo, porque los tests generan sus imágenes con
+# él.
+
+-r requirements-base.txt
+
+pillow                         # genera las imágenes de prueba en memoria
+httpx                          # cliente de pruebas de FastAPI
+pytest
+pytest-asyncio
+pytest-cov

@@ -1,12 +1,11 @@
-fastapi
-uvicorn[standard]
-pydantic-settings
-python-dotenv
-python-multipart               # recepción del binario en /engine/run
-opencv-python-headless         # giro y acotado de la imagen
-numpy
+# Dependencias de ejecución: es lo que instala el Dockerfile.
+#
+# PyTorch no figura acá porque el Dockerfile lo instala antes, desde el índice
+# CPU: la rueda por defecto arrastra CUDA y agrega ~2 GB inútiles sin GPU.
+#
+# Si agregás algo acá, acordate de que `requirements-base.txt` también se copia
+# en la imagen (ver el `COPY` del Dockerfile).
+
+-r requirements-base.txt
+
 easyocr                        # motor (arrastra PyTorch)
-httpx                          # cliente de pruebas de FastAPI
-pytest
-pytest-asyncio
-pytest-cov
