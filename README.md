@@ -1,5 +1,24 @@
 # Motor OCR — EasyOCR
 
+> ## ⚠️ Fuera del Módulo Desde Septiembre de 2026
+>
+> **Este servicio ya no forma parte del módulo de OCR y no se levanta con él.** El
+> coordinador no lo conoce: `ocr_service` habla con Tesseract y con PaddleOCR, y
+> ninguno de los dos ni los backends lo mencionan.
+>
+> **Por qué.** El modo híbrido en producción es `tesseract` → `paddleocr`, así que
+> EasyOCR no participaba de ningún camino: medido con `docker stats` durante una
+> tanda de carga, se quedaba en **0,1 % de CPU sosteniendo 561 MB de memoria**.
+> Ese lugar lo ocupa hoy una segunda réplica de PaddleOCR, que sí es el cuello de
+> botella del sistema y con la que el módulo pasó de 1,8 a 3,2 documentos pesados
+> por minuto.
+>
+> **El repositorio queda.** El contrato del motor no cambió, así que sigue siendo
+> una implementación válida y comparable: para volver a medirlo alcanza con
+> levantarlo y agregarlo a `CONCRETE_ENGINES` y a la configuración del
+> coordinador. Los resultados de la comparativa que motivó la decisión están en
+> `ocr_service/bench/results/`.
+
 Microservicio que hace **una sola cosa**: correr EasyOCR sobre una imagen y devolver las palabras reconocidas con su caja y su confianza.
 
 Habla **el mismo contrato** que [`ocr_service_tesseract`](../ocr_service_tesseract): es lo que le permite a [`ocr_service`](../ocr_service) tratar a los dos motores igual, compararlos sobre la misma foto y combinarlos en el modo híbrido.
@@ -144,7 +163,9 @@ uvicorn app.main:app --reload --port 8006
 pytest
 ```
 
-**36 tests, 91 % de cobertura.** No cargan el modelo —son ~6 s y 1,3 GB—: se dobla el `Reader`. Lo que sí se ejercita es el giro, el acotado de ancho, la reexpansión de las cajas a las coordenadas originales y el agrupamiento por líneas, que es todo lo que este servicio aporta además de invocar al modelo.
+**42 tests, 92 % de cobertura.** No cargan el modelo —son ~6 s y 1,3 GB—: se dobla el `Reader`. Lo que sí se ejercita es el giro, el acotado de ancho, la reexpansión de las cajas a las coordenadas originales y el agrupamiento por líneas, que es todo lo que este servicio aporta además de invocar al modelo.
+
+Además, `test_bandas_reales.py` ejercita la detección de bandas de texto sobre **una foto de envase real** —un sello de vencimiento fotografiado a pulso, la única imagen versionada del repositorio, 103 KB a 1400 px— y sin cargar el modelo, así que corre en el CI como cualquier otro test. Es la función que el coordinador usa para aislar el sello, y no se puede probar con un rectángulo dibujado: lo que hay que verificar es que encuentre un renglón entre la iluminación despareja, el envase curvo y el fondo de la mesada. Las afirmaciones son geométricas y no de contenido, porque **cuál** de las bandas es el sello no lo decide este servicio: las ordena y el coordinador prueba las primeras.
 
 | Archivo | Qué cubre |
 |---------|-----------|
